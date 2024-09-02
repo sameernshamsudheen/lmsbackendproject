@@ -4,6 +4,7 @@ require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const connectDb = require("./database/connectDB");
+const errorMiddleware = require("./middleware/error");
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
@@ -32,3 +33,5 @@ app.all("*", (req, res, next) => {
   err.statusCode = 404;
   next(err);
 });
+
+app.use(errorMiddleware)
