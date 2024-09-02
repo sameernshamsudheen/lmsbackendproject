@@ -3,9 +3,11 @@ const app = express();
 require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const connectDb = require("./database/connectDB");
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
+  connectDb();
 });
 //
 app.use(express.json({ limit: "50mb" }));
