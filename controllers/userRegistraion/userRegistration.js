@@ -1,7 +1,7 @@
 const UserModal = require("../../models/user/userModel");
 const ErrorHandler = require("../../utils/errorHandler");
 const ejs = require("ejs");
-import path from "path";
+const path = require("path");
 const sendMail = require("../../utils/sendMail");
 
 const createActivationToken = require("./helper/createactivation");
@@ -10,7 +10,8 @@ const UserRegistraion = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    const emailExists = UserModal.findOne({ email });
+    const emailExists = await UserModal.findOne({ email });
+    console.log(emailExists, "email exist error");
 
     if (emailExists) {
       return next(new ErrorHandler("email already exists", 400));
@@ -22,13 +23,18 @@ const UserRegistraion = async (req, res, next) => {
     const activationCode = activationToken.ActivationCode;
 
     const data = { user: { name: user.name }, activationCode };
-    const html = ejs.renderFile(
-      path.join(
-        __dirname,
-        "../../emailTemplate/emailUserRegistraionTemplate.ejs",
-        data
-      )
+    const templatePath = path.join(
+      __dirname,
+      "../../emailTemplate/emailUserRegistraionTemplate.ejs"
     );
+    ejs.renderFile(templatePath, data, (err, str) => {
+      if (err) {
+        console.error("Error rendering EJS template:", err);
+      } else {
+        console.log("Rendered HTML:", str);
+        // You can now use the `str` (the rendered HTML) as needed
+      }
+    });
 
     try {
       await sendMail({
@@ -50,3 +56,5 @@ const UserRegistraion = async (req, res, next) => {
     return next(new ErrorHandler(error.message, 400));
   }
 };
+
+module.exports = UserRegistraion;
