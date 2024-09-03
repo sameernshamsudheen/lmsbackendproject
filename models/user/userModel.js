@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Document, Model, Schema } = mongoose;
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

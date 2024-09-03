@@ -1,7 +1,7 @@
 const nodeMailer = require("nodemailer");
 const { Transpoter } = nodeMailer;
-import ejs from "ejs";
-import path from "path";
+const ejs = require("ejs");
+const path = require("path");
 require("dotenv").config();
 
 const sendMail = async (options) => {
@@ -25,7 +25,7 @@ const sendMail = async (options) => {
     subject,
     html,
   };
-  await transporter.sendMail(mailOptions)
+  await transporter.sendMail(mailOptions);
 };
 
-module.exports=sendMail;
+module.exports = sendMail;
