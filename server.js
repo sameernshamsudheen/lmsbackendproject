@@ -16,9 +16,10 @@ app.use(express.json({ limit: "50mb" }));
 
 //cookie-parser
 app.use(cookieParser());
-app.use(cors({origin: process.env.ORIGIN,}));
+app.use(cors({ origin: process.env.ORIGIN }));
 
-app.use("/api/v1", userRoutes);
+app.use("/api/v1",userRoutes )
+
 
 app.get("/test", (req, res, next) => {
   res.status(200).json({
@@ -33,4 +34,4 @@ app.all("*", (req, res, next) => {
   next(err);
 });
 
-app.use(errorMiddleware);
+// app.use(errorMiddleware);

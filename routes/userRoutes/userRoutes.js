@@ -1,11 +1,14 @@
-const  express = require("express")
+const express = require("express");
 
-const userRoutes = express.Router()
-const  userRegistration = require("../../controllers/userRegistraion/userRegistration")
+const userRoutes = express.Router();
 
+const {
+  UserRegistration,
+  userActivation,
+} = require("../../controllers/userRegistraion/userRegistration");
 
-userRoutes.post("/registration",userRegistration)
+userRoutes.post("/registration", UserRegistration);
 
+userRoutes.post("/user-activation", userActivation);
 
-
-module.exports =userRoutes
+module.exports = userRoutes;

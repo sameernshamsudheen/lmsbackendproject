@@ -1,12 +1,19 @@
 const UserModal = require("../../models/user/userModel");
 const ErrorHandler = require("../../utils/errorHandler");
+require("dotenv").config();
 const ejs = require("ejs");
 const path = require("path");
 const sendMail = require("../../utils/sendMail");
+const catchAsyncError = require("../../middleware/catchasyncerror");
 
 const createActivationToken = require("./helper/createactivation");
+const jwt = require("jsonwebtoken");
 
-const UserRegistraion = async (req, res, next) => {
+//user Registraiotn
+
+const UserRegistration = async (req, res, next) => {
+  console.log("userRegistrasion====");
+  
   try {
     const { name, email, password } = req.body;
 
@@ -57,4 +64,42 @@ const UserRegistraion = async (req, res, next) => {
   }
 };
 
-module.exports = UserRegistraion;
+//user Activation
+
+const userActivation = async (req, res, next) => {
+  console.log("userActivation function called");
+  try {
+    const { activation_code, activation_token } = req.body;
+
+    const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
+    console.log(newUser, "newuser====");
+    if (newUser.ActivationCode !== activation_code) {
+      return next(new ErrorHandler("invalid activation code", 400));
+    }
+
+
+
+    const { name, email, password } = newUser.user;
+    const emailExists = await UserModal.findOne({ email });
+
+    if (emailExists) {
+      return next(new ErrorHandler("user already exist", 400));
+    }
+
+    const user = await UserModal.create({
+      name,
+      email,
+      password,
+    });
+    res.status(201).json({
+      success: true,
+      message: "User registraion successfull",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+};
+module.exports = {
+  UserRegistration,
+  userActivation,
+};
