@@ -27,6 +27,10 @@ app.get("/test", (req, res, next) => {
     message: "API is Working",
   });
 });
+app.get('/check-cookies', (req, res) => {
+  console.log("Cookies received: ", req.cookies); // This logs the cookies sent by the client
+  res.json({ cookies: req.cookies });
+});
 app.all("*", (req, res, next) => {
   const err = new Error(`Route${req.originalUrl} not found`);
 

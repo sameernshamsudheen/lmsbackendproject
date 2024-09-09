@@ -6,7 +6,7 @@ const redisClient = () => {
     console.log("Connecting to Redis...");
     return new Redis(process.env.REDIS_URL, {
       reconnectOnError: (err) => {
-        console.error("Reconnect on error:", err);
+        // console.error("Reconnect on error:", err);
         return true; // Automatically reconnect on errors
       },
       retryStrategy: (times) => {

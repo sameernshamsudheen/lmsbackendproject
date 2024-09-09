@@ -4,13 +4,14 @@ require("dotenv").config();
 const cookie = require("cookie-parser");
 
 const sendToken = async (user, statusCode, res) => {
-  console.log("function called", res);
+  console.log("function called", user);
 
   const accessToken = user.SignAccessToken();
 
   const refreshToken = user.SignRefreshToken();
 
-  console.log(accessToken, refreshToken, "tokens");
+  console.log(accessToken, "acess_token===");
+  // console.log(accessToken, "acess_token===" );
   redis
     .set(user._id, JSON.stringify(user))
     .then(() => {
@@ -55,6 +56,7 @@ const sendToken = async (user, statusCode, res) => {
 
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+
   res.status(statusCode).json({
     success: true,
     user,

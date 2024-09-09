@@ -1,6 +1,6 @@
 const ErrorHandler = require("../../utils/errorHandler");
 const userModal = require("../../models/user/userModel");
-const sendToken =require("../../utils/jwt")
+const sendToken = require("../../utils/jwt");
 const Login = catchAsyncError(async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -11,21 +11,23 @@ const Login = catchAsyncError(async (req, res, next) => {
       );
     }
     const user = await userModal.findOne({ email }).select("password");
+    console.log(user, "======");
+
     if (!user) {
       return next(new ErrorHandler("user does not exist", 400));
     }
     const checkPassword = await user.comparePassword(password);
-       console.log(checkPassword,"checkpassword=====");
-       
+    console.log(checkPassword, "checkpassword=====");
+
     if (!checkPassword) {
       return next(new ErrorHandler("invalid password", 400));
     }
 
-       console.log(email,password)
-    sendToken(user,200, res);
+    console.log(email, password);
+    sendToken(user, 200, res);
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
 });
 
-module.exports=Login;
+module.exports = Login;
