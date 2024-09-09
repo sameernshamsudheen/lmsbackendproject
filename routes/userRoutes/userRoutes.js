@@ -1,5 +1,5 @@
 const express = require("express");
-const isAuthenticated =require("../../middleware/auth")
+const { isAuthenticated, validateUserRole } = require("../../middleware/auth");
 
 const userRoutes = express.Router();
 const {
@@ -13,6 +13,11 @@ userRoutes.post("/registration", UserRegistration);
 
 userRoutes.post("/user-activation", userActivation);
 userRoutes.post("/login-user", Login);
-userRoutes.get("/logout-user",isAuthenticated, Logout);
+userRoutes.get(
+  "/logout-user",
+  isAuthenticated,
+  validateUserRole("admin"),
+  Logout
+);
 
 module.exports = userRoutes;

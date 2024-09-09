@@ -3,7 +3,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const { redis } = require("../redis/redisConnection");
 const jwt = require("jsonwebtoken");
 const { json } = require("express");
-const cookies =require("cookie-parser")
+const cookies = require("cookie-parser");
 
 require("dotenv").config();
 // authenticated user
@@ -26,4 +26,23 @@ const isAuthenticated = CatchAsyncError(async (req, res, next) => {
   next();
 });
 
-module.exports = isAuthenticated;
+//validate userRoles
+
+const validateUserRole = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user?.role || " ")) {
+      return next(
+        new ErrorHandler(
+          `Role:${req.user?.role} is not allowed to access this resource`,
+          403
+        )
+      );
+    }
+    next();
+  };
+};
+
+module.exports = {
+  isAuthenticated,
+  validateUserRole,
+};
