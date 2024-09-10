@@ -5,6 +5,7 @@ const userRoutes = express.Router();
 const {
   UserRegistration,
   userActivation,
+  updateAccessToken
 } = require("../../controllers/userRegistraion/userRegistration");
 const Login = require("../../controllers/login/login");
 const Logout = require("../../controllers/logout/logout");
@@ -19,5 +20,7 @@ userRoutes.get(
   validateUserRole("admin"),
   Logout
 );
+userRoutes.get("/refreshtoken",  updateAccessToken)
+
 
 module.exports = userRoutes;
