@@ -1,6 +1,8 @@
 const UserModal = require("../../models/user/userModel");
 const ErrorHandler = require("../../utils/errorHandler");
+const { redis } = require("../../redis/redisConnection");
 require("dotenv").config();
+const {accessTokenOptions,refreshTokenOptions} = require("../../utils/jwt");
 const ejs = require("ejs");
 const path = require("path");
 const sendMail = require("../../utils/sendMail");
@@ -13,7 +15,7 @@ const jwt = require("jsonwebtoken");
 
 const UserRegistration = async (req, res, next) => {
   console.log("userRegistrasion====");
-  
+
   try {
     const { name, email, password } = req.body;
 
@@ -77,8 +79,6 @@ const userActivation = async (req, res, next) => {
       return next(new ErrorHandler("invalid activation code", 400));
     }
 
-
-
     const { name, email, password } = newUser.user;
     const emailExists = await UserModal.findOne({ email });
 
@@ -99,7 +99,41 @@ const userActivation = async (req, res, next) => {
     return next(new ErrorHandler(error.message, 400));
   }
 };
+
+//update json token
+const updateAccessToken = catchAsyncError(async (req, res, next) => {
+  try {
+    const refresh_token = req.cookies.refresh_token;
+    const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN);
+    const message ="Could not refresh token";
+    if(!decoded){
+
+      return next(new ErrorHandler(message,400))
+    }
+    const session =await redis.get(decoded.id)
+    if(!session){
+         return next(new ErrorHandler(message,400))
+
+    }
+    const user =JSON.parse(session)
+    const accessToken =jwt.sign({id:user.id},process.env.ACCESS_TOKEN,{expiresIn:"5m"})
+    const refreshToken =jwt.sign({id:user.id},process.env.REFRESH_TOKEN,{expiresIn:"3d"})
+    res.cookie("access_token",accessToken,accessTokenOptions)
+    res.cookie("refresh_token",refreshToken,refreshTokenOptions)
+
+    res.status(200).json({
+     success:true,
+     accessToken
+
+    })
+  } catch (error) {
+
+    return next(new ErrorHandler(error.message,400))
+  }
+});
+
 module.exports = {
   UserRegistration,
   userActivation,
+  updateAccessToken
 };
