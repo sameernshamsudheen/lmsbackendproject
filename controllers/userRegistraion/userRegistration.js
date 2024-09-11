@@ -139,7 +139,7 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
 const getuserInfo = catchAsyncError(async (req, res, next) => {
   try {
     const userId = req.user?._id;
-    getUserById(userId, res);
+    getUserById(userId, res ,next);
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }

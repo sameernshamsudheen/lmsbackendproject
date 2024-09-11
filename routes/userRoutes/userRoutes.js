@@ -5,7 +5,9 @@ const userRoutes = express.Router();
 const {
   UserRegistration,
   userActivation,
-  updateAccessToken
+  updateAccessToken,
+  socialAuth,
+  getuserInfo
 } = require("../../controllers/userRegistraion/userRegistration");
 const Login = require("../../controllers/login/login");
 const Logout = require("../../controllers/logout/logout");
@@ -21,6 +23,8 @@ userRoutes.get(
   Logout
 );
 userRoutes.get("/refreshtoken",  updateAccessToken)
+userRoutes.post("/social-auth",socialAuth )
+userRoutes.get("/me",  getuserInfo)
 
 
 module.exports = userRoutes;
