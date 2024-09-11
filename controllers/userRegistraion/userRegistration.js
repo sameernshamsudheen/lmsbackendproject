@@ -2,7 +2,7 @@ const UserModal = require("../../models/user/userModel");
 const ErrorHandler = require("../../utils/errorHandler");
 const { redis } = require("../../redis/redisConnection");
 require("dotenv").config();
-const {accessTokenOptions,refreshTokenOptions} = require("../../utils/jwt");
+const { accessTokenOptions, refreshTokenOptions } = require("../../utils/jwt");
 const ejs = require("ejs");
 const path = require("path");
 const sendMail = require("../../utils/sendMail");
@@ -10,6 +10,8 @@ const catchAsyncError = require("../../middleware/catchasyncerror");
 
 const createActivationToken = require("./helper/createactivation");
 const jwt = require("jsonwebtoken");
+const getUserById = require("../../service/user.service");
+const { sendToken } = require("../../utils/jwt");
 
 //user Registraiotn
 
@@ -105,35 +107,63 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
   try {
     const refresh_token = req.cookies.refresh_token;
     const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN);
-    const message ="Could not refresh token";
-    if(!decoded){
-
-      return next(new ErrorHandler(message,400))
+    const message = "Could not refresh token";
+    if (!decoded) {
+      return next(new ErrorHandler(message, 400));
     }
-    const session =await redis.get(decoded.id)
-    if(!session){
-         return next(new ErrorHandler(message,400))
-
+    const session = await redis.get(decoded.id);
+    if (!session) {
+      return next(new ErrorHandler(message, 400));
     }
-    const user =JSON.parse(session)
-    const accessToken =jwt.sign({id:user.id},process.env.ACCESS_TOKEN,{expiresIn:"5m"})
-    const refreshToken =jwt.sign({id:user.id},process.env.REFRESH_TOKEN,{expiresIn:"3d"})
-    res.cookie("access_token",accessToken,accessTokenOptions)
-    res.cookie("refresh_token",refreshToken,refreshTokenOptions)
+    const user = JSON.parse(session);
+    const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN, {
+      expiresIn: "5m",
+    });
+    const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN, {
+      expiresIn: "3d",
+    });
+    res.cookie("access_token", accessToken, accessTokenOptions);
+    res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
     res.status(200).json({
-     success:true,
-     accessToken
-
-    })
+      success: true,
+      accessToken,
+    });
   } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
 
-    return next(new ErrorHandler(error.message,400))
+//get userinfo
+
+const getuserInfo = catchAsyncError(async (req, res, next) => {
+  try {
+    const userId = req.user?._id;
+    getUserById(userId, res);
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
+
+const socialAuth = catchAsyncError(async (req, res, next) => {
+  try {
+    const { email, name, avatar } = req.body;
+    const user = await UserModal.findOne({ email });
+    if (!user) {
+      const newUser = await UserModal.create({ email, name, avatar });
+      sendToken(newUser, 200, res);
+    } else {
+      sendToken(user, 200, res);
+    }
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
   }
 });
 
 module.exports = {
   UserRegistration,
   userActivation,
-  updateAccessToken
+  updateAccessToken,
+  getuserInfo,
+  socialAuth
 };
