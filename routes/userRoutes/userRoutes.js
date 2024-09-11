@@ -7,7 +7,11 @@ const {
   userActivation,
   updateAccessToken,
   socialAuth,
-  getuserInfo
+  getuserInfo,
+
+  updateUserInfo,
+  passwordUpdate,
+  updateProfilePicture,
 } = require("../../controllers/userRegistraion/userRegistration");
 const Login = require("../../controllers/login/login");
 const Logout = require("../../controllers/logout/logout");
@@ -22,9 +26,11 @@ userRoutes.get(
   validateUserRole("admin"),
   Logout
 );
-userRoutes.get("/refreshtoken",  updateAccessToken)
-userRoutes.post("/social-auth",socialAuth )
-userRoutes.get("/me",  getuserInfo)
-
+userRoutes.get("/refreshtoken", updateAccessToken);
+userRoutes.post("/social-auth", socialAuth);
+userRoutes.get("/me", getuserInfo);
+userRoutes.put("/update-user", isAuthenticated, updateUserInfo);
+userRoutes.put("/update-user-password", isAuthenticated, passwordUpdate);
+userRoutes.put("/update-user-avatar", isAuthenticated, updateProfilePicture);
 
 module.exports = userRoutes;
