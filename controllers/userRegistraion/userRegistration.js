@@ -12,6 +12,7 @@ const createActivationToken = require("./helper/createactivation");
 const jwt = require("jsonwebtoken");
 const getUserById = require("../../service/user.service");
 const { sendToken } = require("../../utils/jwt");
+const cloudinary = require("cloudinary");
 
 //user Registraiotn
 
@@ -122,6 +123,7 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
     const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN, {
       expiresIn: "3d",
     });
+    req.user = user;
     res.cookie("access_token", accessToken, accessTokenOptions);
     res.cookie("refresh_token", refreshToken, refreshTokenOptions);
 
@@ -139,7 +141,7 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
 const getuserInfo = catchAsyncError(async (req, res, next) => {
   try {
     const userId = req.user?._id;
-    getUserById(userId, res ,next);
+    getUserById(userId, res, next);
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
@@ -160,10 +162,104 @@ const socialAuth = catchAsyncError(async (req, res, next) => {
   }
 });
 
+const updateUserInfo = catchAsyncError(async (req, res, next) => {
+  try {
+    const { name, email } = req.body;
+    const userId = req.user?._id;
+    const user = await UserModal.findById(userId);
+
+    if (email && user) {
+      const isEmailExist = await UserModal.findOne({ email });
+      if (isEmailExist) {
+        return next(new ErrorHandler("Email already exist", 400));
+      }
+      user.email = email;
+    }
+    if (name && user) {
+      user.name = name;
+    }
+    await user?.save();
+    await redis.set(userId, JSON.stringify(user));
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+const passwordUpdate = catchAsyncError(async (req, res, next) => {
+  try {
+    const { oldpassword, newpassword } = req.body;
+    // const userId = req.user?._id;
+    const user = await UserModal.findById(req.user?._id).select("password");
+    console.log(user, "===user====my user");
+
+    const isPasswordMatch = await user?.comparePassword(oldpassword);
+
+    if (!isPasswordMatch) {
+      return next(new ErrorHandler("invalid old password", 400));
+    }
+    user.password = newpassword;
+    await user.save();
+    await redis.set(req.user?._id, JSON.stringify(user));
+    res.status(201).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+const updateProfilePicture = catchAsyncError(async (req, res, next) => {
+  try {
+    const { avatar } = req.body;
+    const userId = req.user?._id;
+        const user = await UserModal.findById(userId);
+          if(avatar && user){
+
+            if (user?.avatar?.public_id) {
+              await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
+              const mycloud = await cloudinary.v2.uploader.upload(avatar, {
+                folder: "avatars",
+                width:150,
+              });
+              user?.avatar={
+              
+                 public_id:mycloud.public_id,
+                 url:mycloud.secure_url
+              } 
+            } else {
+              const mycloud = await cloudinary.v2.uploader.upload(avatar, {
+                folder: "avatars",
+                width:150,
+              });
+              user?.avatar={
+              
+                 public_id:mycloud.public_id,
+                 url:mycloud.secure_url
+              } 
+            }
+          }
+          await user?.save()
+          await redis.set(userId,JSON.stringify(user))
+          res.status(200).json({
+            success:true,
+            user
+
+          })
+
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
 module.exports = {
   UserRegistration,
   userActivation,
   updateAccessToken,
   getuserInfo,
-  socialAuth
+  socialAuth,
+  updateUserInfo,
+  passwordUpdate,
+  updateProfilePicture 
 };
