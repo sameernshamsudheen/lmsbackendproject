@@ -67,5 +67,17 @@ const getSingleCourse = catchAsyncError(async (req, res, next) => {
     next(new ErrorHandler(error.message, 400));
   }
 });
+const getAllCourse = catchAsyncError(async (req, res, next) => {
+    try {
+      const course = await CourseModel.find().select("-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links");
+      res.status(200).json({
+        success: true,
+        course,
+      });
+    } catch (error) {
+      next(new ErrorHandler(error.message, 400));
+    }
+  });
 
-module.exports = { uploadCourse, editCourse , getSingleCourse};
+module.exports = { uploadCourse, editCourse , getSingleCourse, getAllCourse };
+
