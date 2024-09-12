@@ -6,6 +6,7 @@ const cors = require("cors");
 const connectDb = require("./database/connectDB");
 const errorMiddleware = require("./middleware/error");
 const userRoutes = require("./routes/userRoutes/userRoutes");
+const courseRoutes = require("./routes/course/course.routes");
 const cloudinary = require("cloudinary");
 
 app.listen(process.env.PORT, () => {
@@ -25,6 +26,8 @@ app.use(cookieParser());
 app.use(cors({ origin: process.env.ORIGIN }));
 
 app.use("/api/v1", userRoutes);
+app.use("/api/v1", courseRoutes);
+
 
 app.get("/test", (req, res, next) => {
   res.status(200).json({
