@@ -215,40 +215,35 @@ const updateProfilePicture = catchAsyncError(async (req, res, next) => {
   try {
     const { avatar } = req.body;
     const userId = req.user?._id;
-        const user = await UserModal.findById(userId);
-          if(avatar && user){
-
-            if (user?.avatar?.public_id) {
-              await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
-              const mycloud = await cloudinary.v2.uploader.upload(avatar, {
-                folder: "avatars",
-                width:150,
-              });
-              user?.avatar={
-              
-                 public_id:mycloud.public_id,
-                 url:mycloud.secure_url
-              } 
-            } else {
-              const mycloud = await cloudinary.v2.uploader.upload(avatar, {
-                folder: "avatars",
-                width:150,
-              });
-              user?.avatar={
-              
-                 public_id:mycloud.public_id,
-                 url:mycloud.secure_url
-              } 
-            }
-          }
-          await user?.save()
-          await redis.set(userId,JSON.stringify(user))
-          res.status(200).json({
-            success:true,
-            user
-
-          })
-
+    const user = await UserModal.findById(userId);
+    if (avatar && user) {
+      if (user?.avatar?.public_id) {
+        await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+        const mycloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+        user.avatar = {
+          public_id: mycloud.public_id,
+          url: mycloud.secure_url,
+        };
+      } else {
+        const mycloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+        user.avatar = {
+          public_id: mycloud.public_id,
+          url: mycloud.secure_url,
+        };
+      }
+    }
+    await user?.save();
+    await redis.set(userId, JSON.stringify(user));
+    res.status(200).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     next(new ErrorHandler(error.message, 400));
   }
@@ -261,5 +256,5 @@ module.exports = {
   socialAuth,
   updateUserInfo,
   passwordUpdate,
-  updateProfilePicture 
+  updateProfilePicture,
 };

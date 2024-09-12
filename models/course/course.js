@@ -78,23 +78,22 @@ const courseSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  purchased:{
-
-    type:Number,
-    default:0,
-  }
+  purchased: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const reviewModal = mongoose.model("Review", reviewSchema);
 const CourseDataModal = mongoose.model("CourseData", courseDataSchema);
 const CommentModal = mongoose.model("comment", commentSchema);
 const linkModal = mongoose.model("link", linkSchema);
-const courseModal=mongoose.modelNames("course",courseSchema)
+const courseModal = mongoose.modelNames("course", courseSchema);
 
 module.exports = {
   reviewModal,
   CourseDataModal,
   CommentModal,
   linkModal,
-  courseModal
+  courseModal,
 };
