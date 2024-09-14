@@ -13,31 +13,29 @@ const refreshTokenExpire = parseInt(
 );
 const accessTokenOptions = {
   expires: new Date(Date.now() + accessTokenExpire * 60 * 60 * 1000),
-  maxAge: accessTokenExpire *60*60*1000,
+  maxAge: accessTokenExpire * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
 };
 
 const refreshTokenOptions = {
-  expires: new Date(Date.now() + refreshTokenExpire * 24 *60 * 60 * 1000),
-  maxAge: refreshTokenExpire * 24  * 60 * 60 * 1000,
+  expires: new Date(Date.now() + refreshTokenExpire * 24 * 60 * 60 * 1000),
+  maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000,
   httpOnly: true,
   sameSite: "lax",
 };
 
 const sendToken = async (user, statusCode, res) => {
-  console.log("function called", user);
 
+    console.log(user,"=====sendtokenuser======");
+    
   const accessToken = user.SignAccessToken();
 
   const refreshToken = user.SignRefreshToken();
 
-  console.log(accessToken, "acess_token===");
-  // console.log(accessToken, "acess_token===" );
   redis
     .set(user._id, JSON.stringify(user))
     .then(() => {
-      console.log("User data stored in Redis");
       // Optionally, get the data back to verify
       return redis.get(user._id);
     })
@@ -48,13 +46,9 @@ const sendToken = async (user, statusCode, res) => {
       console.error("Redis operation error:", err);
     });
 
-
-
-
   if (process.env.NODE_ENV === "production") {
     accessTokenOptions.secure = true;
   }
-  console.log("before the cookie");
 
   res.cookie("access_token", accessToken, accessTokenOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenOptions);
@@ -66,4 +60,4 @@ const sendToken = async (user, statusCode, res) => {
   });
 };
 
-module.exports = {sendToken,accessTokenOptions,refreshTokenOptions};
+module.exports = { sendToken, accessTokenOptions, refreshTokenOptions };
