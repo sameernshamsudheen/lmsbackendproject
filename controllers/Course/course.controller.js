@@ -68,16 +68,51 @@ const getSingleCourse = catchAsyncError(async (req, res, next) => {
   }
 });
 const getAllCourse = catchAsyncError(async (req, res, next) => {
-    try {
-      const course = await CourseModel.find().select("-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links");
-      res.status(200).json({
-        success: true,
-        course,
-      });
-    } catch (error) {
-      next(new ErrorHandler(error.message, 400));
+  try {
+    const course = await CourseModel.find().select(
+      "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
+    );
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+const getCourseByUSer = catchAsyncError(async (req, res, next) => {
+  try {
+    console.log(req.user_id,"=====user====")
+    const userCourseList = req.user?.courses;
+
+      
+    const courseId = req.params.id;
+
+    
+
+    const courseExists = await userCourseList.find((course) => {
+      return course._id.toString() === courseId;
+    });
+
+    if (!courseExists) {
+      next(
+        new ErrorHandler("Your are not eligible to access this course", 400)
+      );
     }
-  });
+    const course = await CourseModel.findById(courseId);
 
-module.exports = { uploadCourse, editCourse , getSingleCourse, getAllCourse };
+         console.log(course,"======course======");
+         
+    const content = course?.courseSchema;
+      console.log(content,"======content");
+      
+    res.status(200).json({
+      success: true,
+      content,
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
 
+module.exports = { uploadCourse, editCourse, getSingleCourse, getAllCourse,getCourseByUSer };

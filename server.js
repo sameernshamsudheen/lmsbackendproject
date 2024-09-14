@@ -25,6 +25,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.ORIGIN }));
 
+
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", courseRoutes);
 
@@ -46,4 +47,4 @@ app.all("*", (req, res, next) => {
   next(err);
 });
 
-// app.use(errorMiddleware);
+app.use(errorMiddleware);
