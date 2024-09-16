@@ -1,7 +1,7 @@
 const ErrorHandler = require("../../utils/errorHandler");
 const userModal = require("../../models/user/userModel");
 const { sendToken } = require("../../utils/jwt");
-const Login = catchAsyncError(async (req, res, next) => {
+const  Login = catchAsyncError(async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
