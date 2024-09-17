@@ -5,6 +5,7 @@ const reviewSchema = new mongoose.Schema({
   user: Object,
   rating: { type: Number, default: 0 },
   comment: String,
+  commentReplies:[Object]
 });
 
 // Link Schema

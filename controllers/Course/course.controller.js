@@ -5,8 +5,8 @@ const createCourse = require("../../service/course.service");
 const { CourseModel } = require("../../models/course/course");
 const mongoose = require("mongoose");
 const sendMail = require("../../utils/sendMail");
-const path = require("path")
-const ejs= require("ejs")
+const path = require("path");
+const ejs = require("ejs");
 
 const uploadCourse = catchAsyncError(async (req, res, next) => {
   try {
@@ -220,6 +220,106 @@ const addReplies = catchAsyncError(async (req, res, next) => {
     next(new ErrorHandler(error.message, 400));
   }
 });
+// add review in course
+
+const addReview = catchAsyncError(async (req, res, next) => {
+  try {
+    const { review, rating } = req.body;
+    const userCourseList = req.user.courses;
+    console.log(userCourseList, "====usercourselist====");
+
+    const courseId = req.params.id;
+
+    const courseExists = userCourseList.some((item) => {
+      console.log(item, "=====course====");
+
+      return item._id.toString() === courseId.toString();
+    });
+
+    console.log(courseExists, "=======courseexits===");
+
+    if (!courseExists) {
+      return next(
+        new ErrorHandler("you are not eligible for this course", 400)
+      );
+    }
+
+    // const { questionId, answer, courseId, contentId } = req.body;
+    const course = await CourseModel.findById(courseId);
+    const reviewData = {
+      user: req.user,
+      comment: review,
+      rating,
+    };
+
+    course?.reviews.push(reviewData);
+    let avg = 0;
+
+    course?.reviews.forEach((rev) => {
+      avg += rev.rating;
+    });
+    if (course) {
+      course.ratings = avg / course?.reviews.length; // our example we have 2 reviews  9/2 =4.5 ratings
+    }
+
+    await course.save();
+    const notification = {
+      title: "new Review Recieved",
+      message: `${req.user?.name} has given a review on your ${course?.name}`,
+    };
+
+    // notification
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+
+const addReviewReply = catchAsyncError(async (req, res, next) => {
+  try {
+    const { comment, courseId, reviewId } = req.body;
+
+    const course = await CourseModel.findById(courseId);
+
+    if (!course) {
+      return next(new ErrorHandler("course not found", 400));
+    }
+
+    const review = course?.reviews?.find((rev) => {
+      return rev.id.toString() === reviewId;
+    });
+
+    if (!review) {
+      return next(new ErrorHandler("review not found", 400));
+    }
+    const replyData = {
+      user: req.user,
+      comment,
+    };
+    if (!review.commentReplies) {
+      review.commentReplies = [];
+    }
+    await course.save();
+    // const courseId = req.params.id;
+
+    review?.commentReplies.push(replyData);
+
+    await course?.save();
+
+    // const { questionId, answer, courseId, contentId } = req.body;
+
+    // notification
+    res.status(200).json({
+      success: true,
+      course,
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
 
 module.exports = {
   uploadCourse,
@@ -229,4 +329,6 @@ module.exports = {
   getCourseByUSer,
   addQuestions,
   addReplies,
+  addReview,
+  addReviewReply,
 };
