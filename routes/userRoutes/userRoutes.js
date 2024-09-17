@@ -23,7 +23,7 @@ userRoutes.post("/login-user", Login);
 userRoutes.get(
   "/logout-user",
   isAuthenticated,
-  validateUserRole("admin"),
+  validateUserRole("user"),
   Logout
 );
 userRoutes.get("/refreshtoken", updateAccessToken);
@@ -32,5 +32,6 @@ userRoutes.get("/me", getuserInfo);
 userRoutes.put("/update-user", isAuthenticated, updateUserInfo);
 userRoutes.put("/update-user-password", isAuthenticated, passwordUpdate);
 userRoutes.put("/update-user-avatar", isAuthenticated, updateProfilePicture);
+
 
 module.exports = userRoutes;
