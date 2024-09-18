@@ -8,6 +8,7 @@ const errorMiddleware = require("./middleware/error");
 const userRoutes = require("./routes/userRoutes/userRoutes");
 const courseRoutes = require("./routes/course/course.routes");
 const cloudinary = require("cloudinary");
+const orderRoutes = require("./routes/order/order");
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
@@ -16,7 +17,7 @@ app.listen(process.env.PORT, () => {
 cloudinary.config({
   CLOUD_NAME: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
-  secret_key:process.env.CLOUD_SECRET_KEY
+  secret_key: process.env.CLOUD_SECRET_KEY,
 });
 //
 app.use(express.json({ limit: "50mb" }));
@@ -25,10 +26,9 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.ORIGIN }));
 
-
 app.use("/api/v1", userRoutes);
 app.use("/api/v1", courseRoutes);
-
+app.use("/api/v1", orderRoutes);
 
 app.get("/test", (req, res, next) => {
   res.status(200).json({

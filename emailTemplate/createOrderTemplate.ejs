@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Order Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .order-box {
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-left: 4px solid #3498db;
+      margin-bottom: 20px;
+    }
+    .order-details {
+      background-color: #fff;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    .order-details p {
+      margin: 5px 0;
+    }
+    .footer {
+      margin-top: 20px;
+      color: #888;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Order Confirmation</h1>
+
+
+    <p>Thank you for your purchase! We are excited to confirm your order for the course <strong><%= order.name %></strong>.</p>
+
+    <div class="order-box">
+      <h2>Order Details</h2>
+      <div class="order-details">
+        <p><strong>Order ID:</strong> <%= order._id %></p>
+        <p><strong>Course Name:</strong> <%= order.name %></p>
+        <p><strong>Price:</strong> $<%= order.price %></p>
+        <p><strong>Date of Purchase:</strong> <%= order.date %></p>
+      </div>
+    </div>
+
+    <p>If you have any questions or need further assistance, feel free to reply to this email.</p>
+
+    <p>Best regards,<br>
+
+  </div>
+</body>
+</html>
