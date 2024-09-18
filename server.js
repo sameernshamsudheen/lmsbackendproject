@@ -9,6 +9,7 @@ const userRoutes = require("./routes/userRoutes/userRoutes");
 const courseRoutes = require("./routes/course/course.routes");
 const cloudinary = require("cloudinary");
 const orderRoutes = require("./routes/order/order");
+const notificationRoutes = require("./routes/notifications/notifications");
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
@@ -26,9 +27,7 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.ORIGIN }));
 
-app.use("/api/v1", userRoutes);
-app.use("/api/v1", courseRoutes);
-app.use("/api/v1", orderRoutes);
+app.use("/api/v1", userRoutes, orderRoutes, courseRoutes, notificationRoutes);
 
 app.get("/test", (req, res, next) => {
   res.status(200).json({

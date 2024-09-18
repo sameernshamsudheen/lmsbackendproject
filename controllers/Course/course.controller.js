@@ -135,9 +135,14 @@ const addQuestions = catchAsyncError(async (req, res, next) => {
       question,
       questionReplies: [],
     };
-    console.log(newQuestion, "=====newQuestion======");
+  
 
     courseContent.questions.push(newQuestion);
+    await notificationModal.create({
+      user:req.user?._id,
+      title: "New question",
+      message: `You have a new new question: ${courseContent?.title}`,
+    });
 
     // Save the updated course document to the database
     await course.save();
@@ -182,7 +187,11 @@ const addReplies = catchAsyncError(async (req, res, next) => {
     // Save the updated course document to the database
     await course.save();
     if (req.user?._id === questions.user._id) {
-      //create a  notification
+      await notificationModal.create({
+        user:req.user?._id,
+        title: "New question Reply Received",
+        message: `You have a new new question: ${courseContent?.title}`,
+      });
     } else {
       const data = {
         name: questions.user.name,
