@@ -1,6 +1,7 @@
 const catchAsyncError = require("../../middleware/catchasyncerror");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../../utils/errorHandler");
+const userModal = require("../../models/user/userModel");
 const {
   createCourse,
   getCourseService,
@@ -10,6 +11,7 @@ const mongoose = require("mongoose");
 const sendMail = require("../../utils/sendMail");
 const path = require("path");
 const ejs = require("ejs");
+const { redis } = require("../../redis/redisConnection");
 
 const uploadCourse = catchAsyncError(async (req, res, next) => {
   try {
@@ -338,6 +340,24 @@ const getCourse = catchAsyncError(async (req, res, next) => {
     next(new ErrorHandler(error.message, 400));
   }
 });
+const deleteCourse = catchAsyncError(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const course = await CourseModel.findById(id);
+    if (!course) {
+      return next(new ErrorHandler("course not found", 400));
+    }
+    await course.deleteOne({ id });
+
+    await redis.del(id);
+    res.status(200).json({
+      success: true,
+      message: "course deleted successfully",
+    });
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
 
 module.exports = {
   uploadCourse,
@@ -349,5 +369,6 @@ module.exports = {
   addReplies,
   addReview,
   addReviewReply,
-  getCourse
+  getCourse,
+  deleteCourse
 };

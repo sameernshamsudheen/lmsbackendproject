@@ -14,6 +14,7 @@ const {
   updateProfilePicture,
   getAllUsers,
   updateUserRoles,
+  deleteUser,
 } = require("../../controllers/userRegistraion/userRegistration");
 const Login = require("../../controllers/login/login");
 const Logout = require("../../controllers/logout/logout");
@@ -25,7 +26,7 @@ userRoutes.post("/login-user", Login);
 userRoutes.get(
   "/logout-user",
   isAuthenticated,
-  validateUserRole("user"),
+  validateUserRole("admin"),
   Logout
 );
 userRoutes.get("/refreshtoken", updateAccessToken);
@@ -45,6 +46,18 @@ userRoutes.post(
   isAuthenticated,
   validateUserRole("admin"),
   updateUserRoles
+);
+userRoutes.delete(
+  "/delete-user/:id",
+  isAuthenticated,
+  validateUserRole("admin"),
+  deleteUser
+);
+userRoutes.delete(
+  "/delete-user/:id",
+  isAuthenticated,
+  validateUserRole("admin"),
+  deleteUser
 );
 
 module.exports = userRoutes;
