@@ -17,4 +17,14 @@ const getUserById = async (id, res, next) => {
   }
 };
 
-module.exports = getUserById;
+const getAllUsersService = async (res) => {
+  const user = await userModal.find().sort({ createdAt: -1 });
+  // const user = await redis.get(id);
+
+  res.status(201).json({
+    success: true,
+    user,
+  });
+};
+
+module.exports = { getUserById, getAllUsersService };

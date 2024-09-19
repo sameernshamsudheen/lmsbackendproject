@@ -17,5 +17,14 @@ const newOrder = catchAsyncError(async (data, res, next) => {
   }
 });
 
+const getOrderService = async (res) => {
+  const order = await OrderModal.find().sort({ createdAt: -1 });
+  // const user = await redis.get(id);
 
-module.exports = newOrder;
+  res.status(201).json({
+    success: true,
+    order,
+  });
+};
+
+module.exports = { newOrder, getOrderService };

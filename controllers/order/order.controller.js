@@ -6,7 +6,7 @@ const ErrorHandler = require("../../utils/errorHandler");
 const path = require("path");
 const ejs = require("ejs");
 const notificationModal = require("../../models/notifications/notifications");
-const newOrder = require("../../service/order.service");
+const { newOrder, getOrderService } = require("../../service/order.service");
 
 const createOrder = catchAsyncError(async (req, res, next) => {
   try {
@@ -79,7 +79,7 @@ const createOrder = catchAsyncError(async (req, res, next) => {
     });
 
     console.log(course, "===purchased====");
-    
+
     course.purchased = course.purchased != null ? course.purchased + 1 : 0;
 
     // Save the updated course to the database
@@ -90,4 +90,12 @@ const createOrder = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler(error.message, 500));
   }
 });
-module.exports = createOrder;
+
+const getAllOrders = catchAsyncError(async (req, res, next) => {
+  try {
+    await getOrderService(res);
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+module.exports = { createOrder, getAllOrders };
