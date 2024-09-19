@@ -10,7 +10,11 @@ const catchAsyncError = require("../../middleware/catchasyncerror");
 
 const createActivationToken = require("./helper/createactivation");
 const jwt = require("jsonwebtoken");
-const { getUserById, getAllUsersService } = require("../../service/user.service");
+const {
+  getUserById,
+  getAllUsersService,
+  updateUsersRoleService,
+} = require("../../service/user.service");
 const { sendToken } = require("../../utils/jwt");
 const cloudinary = require("cloudinary");
 
@@ -254,7 +258,17 @@ const updateProfilePicture = catchAsyncError(async (req, res, next) => {
 
 const getAllUsers = catchAsyncError(async (req, res, next) => {
   try {
-    getAllUsersService(res)
+    getAllUsersService(res);
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+const updateUserRoles = catchAsyncError(async (req, res, next) => {
+  try {
+    const { id, role } = req.body;
+
+    
+    updateUsersRoleService(res, id, role);
   } catch (error) {
     next(new ErrorHandler(error.message, 400));
   }
@@ -268,5 +282,6 @@ module.exports = {
   updateUserInfo,
   passwordUpdate,
   updateProfilePicture,
-  getAllUsers
+  getAllUsers,
+  updateUserRoles
 };
