@@ -10,6 +10,7 @@ const courseRoutes = require("./routes/course/course.routes");
 const cloudinary = require("cloudinary");
 const orderRoutes = require("./routes/order/order");
 const notificationRoutes = require("./routes/notifications/notifications");
+const cron=require("node-cron")
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
@@ -35,6 +36,9 @@ app.get("/test", (req, res, next) => {
     message: "API is Working",
   });
 });
+
+
+
 app.get("/check-cookies", (req, res) => {
   console.log("Cookies received: ", req.cookies); // This logs the cookies sent by the client
   res.json({ cookies: req.cookies });
