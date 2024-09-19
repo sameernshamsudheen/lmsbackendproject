@@ -13,6 +13,14 @@ const createCourse = catchAsyncError(async (data, res, next) => {
     course,
   });
 });
+const getCourseService = async (res) => {
+  const course = await CourseModel.find().sort({ createdAt: -1 });
+  // const user = await redis.get(id);
 
+  res.status(201).json({
+    success: true,
+    course,
+  });
+};
 
-module.exports = createCourse;
+module.exports = { createCourse, getCourseService };

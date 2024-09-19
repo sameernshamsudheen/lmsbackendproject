@@ -1,7 +1,10 @@
 const catchAsyncError = require("../../middleware/catchasyncerror");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../../utils/errorHandler");
-const createCourse = require("../../service/course.service");
+const {
+  createCourse,
+  getCourseService,
+} = require("../../service/course.service");
 const { CourseModel } = require("../../models/course/course");
 const mongoose = require("mongoose");
 const sendMail = require("../../utils/sendMail");
@@ -135,11 +138,10 @@ const addQuestions = catchAsyncError(async (req, res, next) => {
       question,
       questionReplies: [],
     };
-  
 
     courseContent.questions.push(newQuestion);
     await notificationModal.create({
-      user:req.user?._id,
+      user: req.user?._id,
       title: "New question",
       message: `You have a new new question: ${courseContent?.title}`,
     });
@@ -188,7 +190,7 @@ const addReplies = catchAsyncError(async (req, res, next) => {
     await course.save();
     if (req.user?._id === questions.user._id) {
       await notificationModal.create({
-        user:req.user?._id,
+        user: req.user?._id,
         title: "New question Reply Received",
         message: `You have a new new question: ${courseContent?.title}`,
       });
@@ -329,6 +331,13 @@ const addReviewReply = catchAsyncError(async (req, res, next) => {
     next(new ErrorHandler(error.message, 400));
   }
 });
+const getCourse = catchAsyncError(async (req, res, next) => {
+  try {
+    await getCourseService(res);
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
 
 module.exports = {
   uploadCourse,
@@ -340,4 +349,5 @@ module.exports = {
   addReplies,
   addReview,
   addReviewReply,
+  getCourse
 };

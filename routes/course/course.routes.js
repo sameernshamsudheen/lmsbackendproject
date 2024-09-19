@@ -10,6 +10,7 @@ const {
   addReplies,
   addReview,
   addReviewReply,
+  getCourse,
 } = require("../../controllers/Course/course.controller");
 const { isAuthenticated, validateUserRole } = require("../../middleware/auth");
 
@@ -26,6 +27,12 @@ courseRouter.put(
   isAuthenticated,
   validateUserRole("user"),
   addReviewReply
+);
+courseRouter.get(
+  "/get-course-all",
+  isAuthenticated,
+  validateUserRole("user"),
+  getCourse
 );
 
 module.exports = courseRouter;
