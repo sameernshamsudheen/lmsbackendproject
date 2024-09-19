@@ -267,8 +267,28 @@ const updateUserRoles = catchAsyncError(async (req, res, next) => {
   try {
     const { id, role } = req.body;
 
-    
     updateUsersRoleService(res, id, role);
+  } catch (error) {
+    next(new ErrorHandler(error.message, 400));
+  }
+});
+
+const deleteUser = catchAsyncError(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const user = await UserModal.findById(id);
+    if (!user) {
+      return next(new ErrorHandler("user not found", 400));
+    }
+    const deletedUser = await user.deleteOne({ id });
+
+    console.log(deletedUser, "===userdeleted==");
+
+    await redis.del(id);
+    res.status(200).json({
+      success: true,
+      message: "user deleted successfully",
+    });
   } catch (error) {
     next(new ErrorHandler(error.message, 400));
   }
@@ -283,5 +303,6 @@ module.exports = {
   passwordUpdate,
   updateProfilePicture,
   getAllUsers,
-  updateUserRoles
+  updateUserRoles,
+  deleteUser,
 };

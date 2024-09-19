@@ -11,6 +11,7 @@ const {
   addReview,
   addReviewReply,
   getCourse,
+  deleteCourse,
 } = require("../../controllers/Course/course.controller");
 const { isAuthenticated, validateUserRole } = require("../../middleware/auth");
 
@@ -33,6 +34,12 @@ courseRouter.get(
   isAuthenticated,
   validateUserRole("user"),
   getCourse
+);
+courseRouter.delete(
+  "/delete-course/:id",
+  isAuthenticated,
+  validateUserRole("admin"),
+  deleteCourse
 );
 
 module.exports = courseRouter;
