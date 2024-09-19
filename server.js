@@ -10,7 +10,8 @@ const courseRoutes = require("./routes/course/course.routes");
 const cloudinary = require("cloudinary");
 const orderRoutes = require("./routes/order/order");
 const notificationRoutes = require("./routes/notifications/notifications");
-const cron=require("node-cron")
+const cron = require("node-cron");
+const analyticsRouter = require("./routes/analytics/analytics");
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
@@ -28,7 +29,14 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.ORIGIN }));
 
-app.use("/api/v1", userRoutes, orderRoutes, courseRoutes, notificationRoutes);
+app.use(
+  "/api/v1",
+  userRoutes,
+  orderRoutes,
+  courseRoutes,
+  notificationRoutes,
+  analyticsRouter
+);
 
 app.get("/test", (req, res, next) => {
   res.status(200).json({
@@ -36,8 +44,6 @@ app.get("/test", (req, res, next) => {
     message: "API is Working",
   });
 });
-
-
 
 app.get("/check-cookies", (req, res) => {
   console.log("Cookies received: ", req.cookies); // This logs the cookies sent by the client

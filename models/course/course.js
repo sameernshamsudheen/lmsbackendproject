@@ -5,7 +5,7 @@ const reviewSchema = new mongoose.Schema({
   user: Object,
   rating: { type: Number, default: 0 },
   comment: String,
-  commentReplies:[Object]
+  commentReplies: [Object],
 });
 
 // Link Schema
@@ -36,25 +36,28 @@ const courseDataSchema = new mongoose.Schema({
 });
 
 // Main Course Schema
-const courseSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  estimatedPrice: { type: Number },
-  thumbnail: {
-    public_id: { type: String },
-    url: { type: String },
+const courseSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    estimatedPrice: { type: Number },
+    thumbnail: {
+      public_id: { type: String },
+      url: { type: String },
+    },
+    tags: { type: String, required: true },
+    level: { type: String, required: true },
+    demoUrl: { type: String, required: true },
+    benefits: [{ title: String }],
+    prerequisite: [{ title: String }],
+    reviews: [reviewSchema], // Array of reviews
+    courseSchema: [courseDataSchema], // Array of course data
+    ratings: { type: Number, default: 0 },
+    purchased: { type: Number, default: 0 },
   },
-  tags: { type: String, required: true },
-  level: { type: String, required: true },
-  demoUrl: { type: String, required: true },
-  benefits: [{ title: String }],
-  prerequisite: [{ title: String }],
-  reviews: [reviewSchema], // Array of reviews
-  courseSchema: [courseDataSchema], // Array of course data
-  ratings: { type: Number, default: 0 },
-  purchased: { type: Number, default: 0 },
-});
+  { timestamps: true }
+);
 
 // Creating and exporting models
 const ReviewModel = mongoose.model("Review", reviewSchema);
