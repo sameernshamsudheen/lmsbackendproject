@@ -27,4 +27,23 @@ const getAllUsersService = async (res) => {
   });
 };
 
-module.exports = { getUserById, getAllUsersService };
+const updateUsersRoleService = async (res, id, role) => {
+  console.log(role,"===role====");
+  
+  try {
+    const user = await userModal.findByIdAndUpdate(
+      id,
+      { $set: { role } }, // Explicitly setting the role field
+      { new: true }
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json({ message: "Role updated successfully", user });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error updating role", error });
+  }
+};
+
+module.exports = { getUserById, getAllUsersService, updateUsersRoleService };

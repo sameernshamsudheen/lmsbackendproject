@@ -13,6 +13,7 @@ const {
   passwordUpdate,
   updateProfilePicture,
   getAllUsers,
+  updateUserRoles,
 } = require("../../controllers/userRegistraion/userRegistration");
 const Login = require("../../controllers/login/login");
 const Logout = require("../../controllers/logout/logout");
@@ -38,6 +39,12 @@ userRoutes.get(
   isAuthenticated,
   validateUserRole("user"),
   getAllUsers
+);
+userRoutes.post(
+  "/update-user-roles",
+  isAuthenticated,
+  validateUserRole("admin"),
+  updateUserRoles
 );
 
 module.exports = userRoutes;
