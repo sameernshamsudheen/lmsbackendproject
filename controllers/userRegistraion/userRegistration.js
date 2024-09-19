@@ -22,8 +22,11 @@ const UserRegistration = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
-    const emailExists = await UserModal.findOne({ email });
+    const emailExists = await UserModal.findOne({ email })
+
+      
     console.log(emailExists, "email exist error");
+     
 
     if (emailExists) {
       return next(new ErrorHandler("email already exists", 400));
@@ -65,6 +68,9 @@ const UserRegistration = async (req, res, next) => {
       return next(new ErrorHandler(error.message, 400));
     }
   } catch (error) {
+
+    console.log(error.message);
+    
     return next(new ErrorHandler(error.message, 400));
   }
 };
@@ -130,6 +136,7 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       success: true,
       accessToken,
+      
     });
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
