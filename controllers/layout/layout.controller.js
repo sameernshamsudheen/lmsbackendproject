@@ -26,21 +26,17 @@ const Layout = catchAsyncError(async (req, res, next) => {
       };
     }
     if (type === "FAQ") {
-      try {
-        const { faq } = req.body;
-        console.log(faq, "===faq====");
-        const faqItems = await Promise.all(
-          faq.map(async (item) => {
-            return {
-              question: item.question,
-              answer: item.answer,
-            };
-          })
-        );
-        await layoutModel.create({ type: "FAQ", faq: faqItems });
-      } catch (error) {
-        console.log(error.message);
-      }
+      const { faq } = req.body;
+
+      const faqItems = await Promise.all(
+        faq.map(async (item) => {
+          return {
+            question: item.question,
+            answer: item.answer,
+          };
+        })
+      );
+      await layoutModel.create({ type: "FAQ", faq: faqItems });
     }
     if (type === "Categories") {
       const { categories } = req.body;
@@ -87,24 +83,20 @@ const editLayout = catchAsyncError(async (req, res, next) => {
       await layoutModel.findByIdAndUpdate(bannerData.id, { banner });
     }
     if (type === "FAQ") {
-      try {
-        const { faq } = req.body;
-        const FaqId = await layoutModel.findOne({ type: "FAQ" });
-        const faqItems = await Promise.all(
-          faq.map(async (item) => {
-            return {
-              question: item.question,
-              answer: item.answer,
-            };
-          })
-        );
-        await layoutModel.findByIdAndUpdate(FaqId._id, {
-          type: "FAQ",
-          faq: faqItems,
-        });
-      } catch (error) {
-        console.log(error.message);
-      }
+      const { faq } = req.body;
+      const FaqId = await layoutModel.findOne({ type: "FAQ" });
+      const faqItems = await Promise.all(
+        faq.map(async (item) => {
+          return {
+            question: item.question,
+            answer: item.answer,
+          };
+        })
+      );
+      await layoutModel.findByIdAndUpdate(FaqId._id, {
+        type: "FAQ",
+        faq: faqItems,
+      });
     }
     if (type === "Categories") {
       const { categories } = req.body;
@@ -116,7 +108,6 @@ const editLayout = catchAsyncError(async (req, res, next) => {
           };
         })
       );
-      console.log(categoriesId, "===items----");
 
       await layoutModel.findByIdAndUpdate(categoriesId._id, {
         type: "Categories",

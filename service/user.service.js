@@ -28,7 +28,7 @@ const getAllUsersService = async (res) => {
 };
 
 const updateUsersRoleService = async (res, id, role) => {
-  console.log(role,"===role====");
+
   
   try {
     const user = await userModal.findByIdAndUpdate(
