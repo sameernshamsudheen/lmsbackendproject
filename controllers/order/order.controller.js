@@ -78,7 +78,7 @@ const createOrder = catchAsyncError(async (req, res, next) => {
       message: `You have a new order for the course: ${course?.name}`,
     });
 
-    console.log(course, "===purchased====");
+
 
     course.purchased = course.purchased != null ? course.purchased + 1 : 0;
 

@@ -21,14 +21,13 @@ const cloudinary = require("cloudinary");
 //user Registraiotn
 
 const UserRegistration = async (req, res, next) => {
-  console.log("userRegistrasion====");
+ 
 
   try {
     const { name, email, password } = req.body;
 
     const emailExists = await UserModal.findOne({ email });
 
-    console.log(emailExists, "email exist error");
 
     if (emailExists) {
       return next(new ErrorHandler("email already exists", 400));
@@ -202,7 +201,7 @@ const passwordUpdate = catchAsyncError(async (req, res, next) => {
     const { oldpassword, newpassword } = req.body;
     // const userId = req.user?._id;
     const user = await UserModal.findById(req.user?._id).select("password");
-    console.log(user, "===user====my user");
+
 
     const isPasswordMatch = await user?.comparePassword(oldpassword);
 

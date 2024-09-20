@@ -48,7 +48,7 @@ app.get("/test", (req, res, next) => {
 });
 
 app.get("/check-cookies", (req, res) => {
-  console.log("Cookies received: ", req.cookies); // This logs the cookies sent by the client
+ // This logs the cookies sent by the client
   res.json({ cookies: req.cookies });
 });
 app.all("*", (req, res, next) => {

@@ -93,7 +93,7 @@ const getAllCourse = catchAsyncError(async (req, res, next) => {
 });
 const getCourseByUSer = catchAsyncError(async (req, res, next) => {
   try {
-    console.log(req.user_id, "=====user====");
+
     const userCourseList = req.user?.courses;
 
     const courseId = req.params.id;
@@ -109,10 +109,9 @@ const getCourseByUSer = catchAsyncError(async (req, res, next) => {
     }
     const course = await CourseModel.findById(courseId);
 
-    console.log(course, "======course======");
 
     const content = course?.courseSchema;
-    console.log(content, "======content");
+
 
     res.status(200).json({
       success: true,
@@ -177,7 +176,7 @@ const addReplies = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("invalid content id", 400));
     }
 
-    // // console.log(newQuestion, "=====newQuestion======");
+    
     const questions = courseContent.questions.find((item) => {
       return item._id.equals(questionId);
     });
@@ -241,17 +240,17 @@ const addReview = catchAsyncError(async (req, res, next) => {
   try {
     const { review, rating } = req.body;
     const userCourseList = req.user.courses;
-    console.log(userCourseList, "====usercourselist====");
+
 
     const courseId = req.params.id;
 
     const courseExists = userCourseList.some((item) => {
-      console.log(item, "=====course====");
+  
 
       return item._id.toString() === courseId.toString();
     });
 
-    console.log(courseExists, "=======courseexits===");
+
 
     if (!courseExists) {
       return next(

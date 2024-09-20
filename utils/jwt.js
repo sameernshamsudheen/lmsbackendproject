@@ -26,9 +26,6 @@ const refreshTokenOptions = {
 };
 
 const sendToken = async (user, statusCode, res) => {
-
-    console.log(user,"=====sendtokenuser======");
-    
   const accessToken = user.SignAccessToken();
 
   const refreshToken = user.SignRefreshToken();

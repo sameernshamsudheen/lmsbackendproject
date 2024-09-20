@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const ErrorHandler = require("./errorHandler");
 
 const generateLast12MonthsData = async (model) => {
-  console.log(model, "12 moths model====");
+
   try {
     const last12MonthsData = [];
     const currentDate = new Date();
