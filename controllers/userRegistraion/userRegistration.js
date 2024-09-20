@@ -79,12 +79,11 @@ const UserRegistration = async (req, res, next) => {
 //user Activation
 
 const userActivation = async (req, res, next) => {
-  console.log("userActivation function called");
   try {
     const { activation_code, activation_token } = req.body;
 
     const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
-    console.log(newUser, "newuser====");
+
     if (newUser.ActivationCode !== activation_code) {
       return next(new ErrorHandler("invalid activation code", 400));
     }
@@ -121,7 +120,9 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
     }
     const session = await redis.get(decoded.id);
     if (!session) {
-      return next(new ErrorHandler(message, 400));
+      return next(
+        new ErrorHandler("please login to access this resource", 400)
+      );
     }
     const user = JSON.parse(session);
     const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN, {
@@ -133,6 +134,7 @@ const updateAccessToken = catchAsyncError(async (req, res, next) => {
     req.user = user;
     res.cookie("access_token", accessToken, accessTokenOptions);
     res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+    await redis.set(user._id, JSON.stringify(user), "Ex", 604800); //7days;
 
     res.status(200).json({
       success: true,
@@ -281,8 +283,6 @@ const deleteUser = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("user not found", 400));
     }
     const deletedUser = await user.deleteOne({ id });
-
-    console.log(deletedUser, "===userdeleted==");
 
     await redis.del(id);
     res.status(200).json({

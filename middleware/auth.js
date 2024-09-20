@@ -22,7 +22,7 @@ const isAuthenticated = CatchAsyncError(async (req, res, next) => {
    console.log(user,"=====user====redis");
    
   if (!user) {
-    return next(new ErrorHandler("user not found", 400));
+    return next(new ErrorHandler("please login to access this resource", 400));
   }
   req.user = JSON.parse(user);
 
