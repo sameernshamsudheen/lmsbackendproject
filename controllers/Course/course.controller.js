@@ -65,9 +65,11 @@ const editCourse = catchAsyncError(async (req, res, next) => {
 
 const getSingleCourse = catchAsyncError(async (req, res, next) => {
   try {
+    const courseId = req.params.id;
     const course = await CourseModel.findById(req.params.id).select(
       "-courseData.videoUrl -courseData.suggestion -courseData.questions -courseData.links"
     );
+    await redis.set(courseId, JSON.stringify(course), "Ex", 604800);
     res.status(200).json({
       success: true,
       course,
@@ -370,5 +372,5 @@ module.exports = {
   addReview,
   addReviewReply,
   getCourse,
-  deleteCourse
+  deleteCourse,
 };
