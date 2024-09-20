@@ -12,6 +12,7 @@ const orderRoutes = require("./routes/order/order");
 const notificationRoutes = require("./routes/notifications/notifications");
 const cron = require("node-cron");
 const analyticsRouter = require("./routes/analytics/analytics");
+const layoutRouter = require("./routes/layout/layout");
 
 app.listen(process.env.PORT, () => {
   console.log(`server started at ${process.env.PORT}`);
@@ -35,7 +36,8 @@ app.use(
   orderRoutes,
   courseRoutes,
   notificationRoutes,
-  analyticsRouter
+  analyticsRouter,
+  layoutRouter
 );
 
 app.get("/test", (req, res, next) => {
